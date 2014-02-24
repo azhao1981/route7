@@ -33,12 +33,12 @@ func (r *Route) Init(b string) {
 // 是否匹配本条路由的规则
 func (r *Route) IsMatch(request string) (ok bool) {
 	source_path := request
-	ok = r.IsMatchSourcePaths(source_path)
+	ok = r.isMatchSourcePaths(source_path)
 	return
 }
 
 // 是否符本路由的的SourcePaths规则
-func (r *Route) IsMatchSourcePaths(source_path string) (ok bool) {
+func (r *Route) isMatchSourcePaths(source_path string) (ok bool) {
 	for _, path := range r.SourcePaths {
 		if path == source_path {
 			ok = true
@@ -47,3 +47,18 @@ func (r *Route) IsMatchSourcePaths(source_path string) (ok bool) {
 	}
 	return
 }
+
+// Matcher of SourceParam, only one param match will return true
+func (r *Route) isMatchSourceParams(params []string) (ok bool) {
+	for _, param := range params { // for each params
+		for _, sParam := range r.SourceParams { // for each SourceParams
+			if sParam == param {
+				ok = true
+				return
+			}
+		}
+	}
+	return
+}
+
+// END
