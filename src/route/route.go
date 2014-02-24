@@ -24,13 +24,26 @@ type Route struct {
 	Redirect            bool              `json:"redirect"`
 }
 
-func (r *Route) Init(b []byte) {
+func (r *Route) Init(b string) {
 	if json.Unmarshal([]byte(b), &r) != nil {
 		panic("Parse json failed.")
 	}
 }
 
+// 是否匹配本条路由的规则
 func (r *Route) IsMatch(request string) (ok bool) {
-	ok = true
+	source_path := request
+	ok = r.IsMatchSourcePaths(source_path)
+	return
+}
+
+// 是否符本路由的的SourcePaths规则
+func (r *Route) IsMatchSourcePaths(source_path string) (ok bool) {
+	for _, path := range r.SourcePaths {
+		if path == source_path {
+			ok = true
+			return
+		}
+	}
 	return
 }

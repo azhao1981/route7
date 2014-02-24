@@ -35,14 +35,22 @@ func TestInit(t *testing.T) {
                 "city_id": "cityId"
             }
         }`
-	route.Init([]byte(r))
+	route.Init(r)
 }
 
 func TestMatch(t *testing.T) {
-	fmt.Printf("%s\n", route)
 	request := `http://localhost:10003/callback`
 	if res := route.IsMatch(request); res {
 		fmt.Printf("request:%v ,isMatch is %v\n", request, res)
+	} else {
+		t.Error("#isMatch 匹配错误")
+	}
+}
+
+func TestIsMatchSourcePaths(t *testing.T) {
+	source_path := `/ticket/req.do`
+	if res := route.IsMatchSourcePaths(source_path); !res {
+		t.Error("#IsMatchSourcePaths 匹配错误")
 	}
 }
 
