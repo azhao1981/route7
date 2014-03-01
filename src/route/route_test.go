@@ -2,6 +2,8 @@ package route
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
 	"testing"
 )
 
@@ -39,23 +41,41 @@ func TestInit(t *testing.T) {
 }
 
 func TestMatch(t *testing.T) {
-	request := `http://localhost:10003/callback`
-	if res := route.IsMatch(request); !res {
-		// t.Error("#isMatch 匹配错误")
+	req_url := `http://localhost:10003/ticket/req.do?processcode=11002&mobile=10`
+	req, _ := http.NewRequest("GET", req_url, nil)
+	fmt.Println(req.URL.Path, strings.Split(req.URL.RawQuery, "&"))
+	if res := route.IsMatch(req); !res {
+		t.Error("#isMatch (request) match error !!")
+	}
+}
+
+func TestMatchNotMatchPathCase(t *testing.T) {
+	req_url := `http://localhost:10003/ticket/req1.do?processcode=11002`
+	req, _ := http.NewRequest("GET", req_url, nil)
+	if res := route.IsMatch(req); res {
+		t.Error("#isMatch (request) match error2 !!")
+	}
+}
+
+func TestMatchNotMatchParamsCase(t *testing.T) {
+	req_url := `http://localhost:10003/ticket/req.do?processcode=11005`
+	req, _ := http.NewRequest("GET", req_url, nil)
+	if res := route.IsMatch(req); res {
+		t.Error("#isMatch (request) match error3 !!")
 	}
 }
 
 func TestIsMatchSourcePaths(t *testing.T) {
 	source_path := `/ticket/req.do`
 	if res := route.isMatchSourcePaths(source_path); !res {
-		t.Error("#IsMatchSourcePaths 匹配错误")
+		t.Error("#IsMatchSourcePaths match error !!")
 	}
 }
 
 func TestIsMatchSourceParams(t *testing.T) {
 	source_params := []string{"processcode=11002", "DeviceID=12345609888"}
 	if res := route.isMatchSourceParams(source_params); !res {
-		t.Error("#isMatchSourceParams 匹配错误")
+		t.Error("#isMatchSourceParams match error !!")
 	}
 }
 
