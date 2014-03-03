@@ -8,8 +8,10 @@
 package route
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 )
@@ -45,13 +47,43 @@ func (r *Route) Init(b string) {
 // 是否匹配本条路由的规则
 func (r *Route) IsMatch(request *http.Request) (ok bool) {
 	source_path := request.URL.Path
-	source_params := strings.Split(request.URL.RawQuery, "&")
+	get_query := get_get_values(request)
+	post_query := get_post_values(request)
+	source_params := merge_params(get_query, post_query)
 
 	var param_ok, path_ok bool
 	param_ok = !r.need_check_sparams || r.isMatchSourceParams(source_params)
 	path_ok = !r.need_check_spaths || r.isMatchSourcePaths(source_path)
 
 	ok = param_ok && path_ok
+	return
+}
+
+// merge two slice
+func merge_params(params_a []string, params_b []string) (params_m []string) {
+	params_m = append(params_a, params_b...)
+	return
+}
+
+// get Get values from request.URL.RawQuery
+func get_get_values(request *http.Request) (gms []string) {
+	gms = strings.Split(request.URL.RawQuery, "&")
+	return
+}
+
+// get post values from request.Body
+func get_post_values(request *http.Request) (pms []string) {
+	if request.Body != nil {
+		pms_bytes, _ := ioutil.ReadAll(request.Body)
+		pms = params_values(pms_bytes)
+	}
+	return
+}
+
+// Get params values from "X=x&B=b" to ["X=x","B=b"]
+func params_values(raw_bytes []byte) (ps []string) {
+	body_buffer := bytes.NewBuffer(raw_bytes)
+	ps = strings.Split(body_buffer.String(), "&")
 	return
 }
 
