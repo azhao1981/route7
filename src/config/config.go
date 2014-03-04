@@ -8,30 +8,34 @@
 package config
 
 import (
+	"../route"
+	"encoding/json"
 	"fmt"
-	// "route"
 	"io/ioutil"
 )
 
 type Config struct {
-	path string
-	// routes []Route
-	listen struct {
-		host string
-		port int
+	Default route.Route
+	Routes  []route.Route
+	Listen  struct {
+		Host string
+		Port int
 	}
-	log        string `json:"log"`
-	error_log  string `json:"error_log"`
-	admin      string `json:"admin`
+	Log        string `json:"log"`
+	Error_log  string `json:"error_log"`
+	Admin      string `json:"admin"`
 	PprofHttpd string `json:"pprof_httpd"`
 }
 
 func (c *Config) Load(path string) {
-	c.path = path
-	b, err := ioutil.ReadFile(c.path)
+	b, err := ioutil.ReadFile(path)
 	if err != nil {
 		panic("Load Config File Error.")
 	}
-	fmt.Printf("%s", b)
+
+	if json.Unmarshal([]byte(b), &c) != nil {
+		panic("Parse json failed.")
+	}
+	fmt.Println(c)
 	fmt.Println("Load config ", path, "OK!!")
 }
