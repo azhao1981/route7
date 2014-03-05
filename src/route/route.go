@@ -27,21 +27,26 @@ type Route struct {
 	ConnectionTimeout   int               `json:"connection_timeout"`
 	ResponseTimeout     int               `json:"response_timeout"`
 	Redirect            bool              `json:"redirect"`
-	need_check_spaths   bool
-	need_check_sparams  bool
+	NeedCheckPaths      bool
+	NeedCheckParams     bool
 }
 
 func (r *Route) Init(b string) {
 	if json.Unmarshal([]byte(b), &r) != nil {
 		panic("Parse json failed.")
 	}
+	r.Afterload()
+	fmt.Println("route ready") // delete after
+}
+
+// mark flag
+func (r *Route) Afterload() {
 	if len(r.SourcePaths) > 0 {
-		r.need_check_spaths = true
+		r.NeedCheckPaths = true
 	}
 	if len(r.SourceParams) > 0 {
-		r.need_check_sparams = true
+		r.NeedCheckParams = true
 	}
-	fmt.Println("route ready") // delete after
 }
 
 // 是否匹配本条路由的规则
@@ -52,8 +57,8 @@ func (r *Route) IsMatch(request *http.Request) (ok bool) {
 	source_params := merge_params(get_query, post_query)
 
 	var param_ok, path_ok bool
-	param_ok = !r.need_check_sparams || r.isMatchSourceParams(source_params)
-	path_ok = !r.need_check_spaths || r.isMatchSourcePaths(source_path)
+	param_ok = !r.NeedCheckParams || r.isMatchSourceParams(source_params)
+	path_ok = !r.NeedCheckPaths || r.isMatchSourcePaths(source_path)
 
 	ok = param_ok && path_ok
 	return
