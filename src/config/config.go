@@ -12,6 +12,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
+	"sort"
 )
 
 type Config struct {
@@ -36,6 +38,8 @@ func (c *Config) Load(path string) {
 	if json.Unmarshal([]byte(b), &c) != nil {
 		panic("Parse json failed.")
 	}
+	sort.Sort(sortById(c.Routes))
+	// fmt.Println(c.Routes)
 	for index, _ := range c.Routes {
 		c.Routes[index].Afterload()
 	}
@@ -44,6 +48,7 @@ func (c *Config) Load(path string) {
 
 // test config file . this function is for support just like nginx -t
 // simple one , TODO is tell the error detail
+// BUG: id conflict will be show
 func (c *Config) TestLoad(path string) (ok bool) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -55,3 +60,22 @@ func (c *Config) TestLoad(path string) (ok bool) {
 	ok = true
 	return
 }
+
+// @FindRoute
+// Find the first Match Route from config file ,searching should order by id
+func (c *Config) FindRoute(request *http.Request) (r *route.Route) {
+	for i, _ := range c.Routes {
+		if c.Routes[i].IsMatch(request) {
+			r = &c.Routes[i]
+			break
+		}
+	}
+	return
+}
+
+// sort by id Interface
+type sortById []route.Route
+
+func (v sortById) Len() int           { return len(v) }
+func (v sortById) Swap(i, j int)      { v[i], v[j] = v[j], v[i] }
+func (v sortById) Less(i, j int) bool { return v[i].Id < v[j].Id }

@@ -2,6 +2,7 @@ package config
 
 import (
 	// "fmt"
+	"net/http"
 	"testing"
 )
 
@@ -29,8 +30,7 @@ func TestLoadConfig(t *testing.T) {
 	if config.Listen.Port != 9000 {
 		t.Error("config listen port error")
 	}
-
-	if config.Routes[0].Id != 900 {
+	if config.Routes[0].Id != 100 {
 		t.Error("config route 1 id is 900 error")
 	}
 
@@ -48,5 +48,22 @@ func TestTestLoad(t *testing.T) {
 	}
 	if config.TestLoad(CONFIG_WRONG_FILE) {
 		t.Error("TestLoad wrong config file Error")
+	}
+}
+
+// FindRoute test
+// test request with params "DeviceID=AAA", route Id:1000 will be return
+func TestFindRoute(t *testing.T) {
+	var config Config
+	if !config.TestLoad(CONFIG_FILE) {
+		t.Error("TestLoad config file Error")
+	}
+
+	req_url := `http://localhost:10003/ticket/req.do?DeviceID=AAA`
+	req, _ := http.NewRequest("GET", req_url, nil)
+
+	r := config.FindRoute(req)
+	if r == nil || r.Id != 1000 {
+		t.Error("Test #FindRoute should find route 1000")
 	}
 }
