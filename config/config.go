@@ -8,9 +8,9 @@
 package config
 
 import (
-	"../route"
 	"encoding/json"
 	"fmt"
+	"github.com/azhao1981/route7/route"
 	"io/ioutil"
 	"net/http"
 	"sort"
@@ -57,6 +57,17 @@ func (c *Config) TestLoad(path string) (ok bool) {
 		}
 	}()
 	c.Load(path)
+	c.CanListen()
+	ok = true
+	return
+}
+
+// @CanListen
+// Checking is there Port or UnixSocket is given
+func (c *Config) CanListen() (ok bool) {
+	if c.Listen.Port < 1 {
+		panic("Listen port must be set. Abort !!!")
+	}
 	ok = true
 	return
 }

@@ -6,8 +6,8 @@ import (
 	"testing"
 )
 
-const CONFIG_FILE = "../../etc/config.json"
-const CONFIG_WRONG_FILE = "../../etc/config_wrong.json"
+const CONFIG_FILE = "../etc/config.json"
+const CONFIG_WRONG_FILE = "../etc/config_wrong.json"
 
 const CONFIG_COUNT = 6
 

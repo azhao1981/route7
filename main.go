@@ -1,9 +1,10 @@
 package main
 
 import (
-	"config"
 	"flag"
 	"fmt"
+	"github.com/azhao1981/route7/app"
+	"github.com/azhao1981/route7/config"
 	"os"
 )
 
@@ -14,10 +15,13 @@ const CONFIG_COUNT = 6
 var conf config.Config
 
 func main() {
-	fmt.Println(APP_NAME, " version ", VERSION)
+	fmt.Println(app.APP_NAME, "version", app.VERSION)
 
 	flag.Usage = show_usage
-	conf.Load(CONFIG_FILE)
+	if !conf.TestLoad(CONFIG_FILE) {
+		panic("Config File error ,Try it later!")
+	}
+	app.Run(&conf)
 }
 
 func show_usage() {
@@ -25,5 +29,4 @@ func show_usage() {
 		"Usage: %s \n",
 		os.Args[0])
 	flag.PrintDefaults()
-
 }
