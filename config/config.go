@@ -75,12 +75,14 @@ func (c *Config) CanListen() (ok bool) {
 // @FindRoute
 // Find the first Match Route from config file ,searching should order by id
 func (c *Config) FindRoute(request *http.Request) (r *route.Route) {
+	r = &c.Default
 	for i, _ := range c.Routes {
 		if c.Routes[i].IsMatch(request) {
 			r = &c.Routes[i]
 			break
 		}
 	}
+
 	return
 }
 

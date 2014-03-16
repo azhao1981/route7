@@ -1,7 +1,7 @@
 package config
 
 import (
-	// "fmt"
+	"fmt"
 	"net/http"
 	"testing"
 )
@@ -63,7 +63,26 @@ func TestFindRoute(t *testing.T) {
 	req, _ := http.NewRequest("GET", req_url, nil)
 
 	r := config.FindRoute(req)
+	fmt.Println("# FindRoute() id: ", r.Id)
 	if r == nil || r.Id != 1000 {
 		t.Error("Test #FindRoute should find route 1000")
+	}
+}
+
+// FindRoute test
+// test request with params "DeviceID=AAA", route Id:1000 will be return
+func TestFindRouteDefault(t *testing.T) {
+	var config Config
+	if !config.TestLoad(CONFIG_FILE) {
+		t.Error("TestLoad config file Error")
+	}
+
+	req_url := `http://localhost:10003/ticket/req.do?DeviceID=NotThisRoute`
+	req, _ := http.NewRequest("GET", req_url, nil)
+
+	r := config.FindRoute(req)
+	fmt.Println("# FindRoute() id: ", r.Id)
+	if r == nil || r.Id != 0 {
+		t.Error("Test #FindRoute should find route 0")
 	}
 }
