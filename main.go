@@ -1,10 +1,10 @@
 package main
 
 import (
+	"app"
+	"config"
 	"flag"
 	"fmt"
-	"github.com/azhao1981/route7/app"
-	"github.com/azhao1981/route7/config"
 	"os"
 )
 

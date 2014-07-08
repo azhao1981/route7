@@ -2,13 +2,13 @@
 package app
 
 import (
+	"config"
 	"fmt"
-	"github.com/azhao1981/route7/config"
-	"github.com/azhao1981/route7/route"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"route"
 	"syscall"
 	"time"
 )

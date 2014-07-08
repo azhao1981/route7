@@ -10,9 +10,9 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/azhao1981/route7/route"
 	"io/ioutil"
 	"net/http"
+	"route"
 	"sort"
 )
 
