@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"os"
 	"os/signal"
 	"route"
@@ -15,7 +16,7 @@ import (
 
 const (
 	APP_NAME = "route7"
-	VERSION  = "0.9.0"
+	VERSION  = "0.9.2"
 )
 
 type Server struct {
@@ -27,6 +28,8 @@ func Run(c *config.Config) {
 	signal.Notify(sigchan, os.Interrupt, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT)
 
 	server := Server{config: c}
+	proxy := httputil.NewSingleHostReverseProxy(target)
+
 	go func() {
 		s := &http.Server{
 			Addr:           fmt.Sprintf("%s:%d", c.Listen.Host, c.Listen.Port),
